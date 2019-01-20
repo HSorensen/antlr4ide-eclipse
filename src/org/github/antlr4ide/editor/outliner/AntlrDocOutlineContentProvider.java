@@ -52,6 +52,7 @@ public class AntlrDocOutlineContentProvider implements ITreeContentProvider {
 		if(DEBUG)
 			System.out.println(">>> AntlrDocOutlineOutlineContentProvider.hasChildren ("+(element==null?"null":element.getClass())+")");
 		if (element instanceof OutlineRootElement) {
+			if(doc.getGrammarInfo()==null) return false ; // empty document
 			Integer type= ((OutlineRootElement)element).getType();
 			if(type==0) return doc.getGrammarInfo().getParserRules().isEmpty()==false;
 			if(type==1) return doc.getGrammarInfo().getLexerRules().isEmpty()==false;
