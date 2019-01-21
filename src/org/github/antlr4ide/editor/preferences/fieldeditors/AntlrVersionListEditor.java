@@ -69,6 +69,12 @@ public class AntlrVersionListEditor extends ListEditor {
 				String mainClass = (String) attributes.get(new Attributes.Name("Main-Class"));
 				jarjar.close();
 
+				if(version==null
+				|| mainClass==null) {
+					System.err.println("Invalid Tool Jar: Manifest is missing Main-Class or Implementation-Version.");
+					return false;
+				}
+					
 				if(mainClass.equals(TOOL)) {
 				   out.append(version);
  				   out.append(" ");
@@ -80,8 +86,13 @@ public class AntlrVersionListEditor extends ListEditor {
 				   
  				   return true;
 				}
+				else
+				{
+					System.err.println("Invalid Tool Jar: Main-Class "+mainClass+" not matching Tool "+TOOL);
+					return false;
+				}
 			} catch (Exception e) {
-				System.out.println("Exception caught, but otherwise ignored.");
+				System.err.println("Exception caught, but otherwise ignored.");
 				e.printStackTrace();
 			}
 			
