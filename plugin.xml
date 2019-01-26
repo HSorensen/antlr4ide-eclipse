@@ -35,6 +35,13 @@
         <page
             class="org.github.antlr4ide.editor.preferences.AntlrPreferenceSyntaxHighLighting"
             id="org.github.antlr4ide.Antlr4.newprefs.syntaxcolor"
+            name="Syntax Color deprecated"
+            category="org.github.antlr4ide.Antlr4.newprefs">
+            <keywordReference id="org.github.antlr4ide.editor.keyword_Antlr4"/>
+        </page>    
+        <page
+            class="org.github.antlr4ide.editor.preferences.fieldeditors.SyntaxColoringPreferencePage"
+            id="org.github.antlr4ide.Antlr4.newprefs.syntaxcolorpage"
             name="Syntax Color"
             category="org.github.antlr4ide.Antlr4.newprefs">
             <keywordReference id="org.github.antlr4ide.editor.keyword_Antlr4"/>

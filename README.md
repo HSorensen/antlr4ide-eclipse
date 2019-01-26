@@ -126,8 +126,9 @@ https://www.eclipse.org/articles/Article-Builders/builders.html
 
 
 ## SWT Widgets samples etc
-https://www.eclipse.org/swt/
-https://www.eclipse.org/swt/snippets/
-https://www.eclipse.org/swt/javadoc.php
-[SWT: A Native Widget Toolkit for Java - Part 1 of 2](http://www.sys-con.com/node/37463)
-[SWT: A Native Widget Toolkit for Java - Part 2 of 2](http://www.sys-con.com/node/37509)
+1. https://www.eclipse.org/swt/
+1. https://www.eclipse.org/swt/snippets/
+1. https://www.eclipse.org/swt/javadoc.php
+1. [SWT: A Native Widget Toolkit for Java - Part 1 of 2](http://www.sys-con.com/node/37463)
+1. [SWT: A Native Widget Toolkit for Java - Part 2 of 2](http://www.sys-con.com/node/37509)
+1. [CDT prefs](https://git.eclipse.org/c/cdt/org.eclipse.cdt.git/tree/core/org.eclipse.cdt.ui/src/org/eclipse/cdt/internal/ui/preferences/CEditorColoringConfigurationBlock.java)
