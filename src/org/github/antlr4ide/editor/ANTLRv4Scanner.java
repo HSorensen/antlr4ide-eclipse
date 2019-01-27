@@ -20,6 +20,7 @@ public class ANTLRv4Scanner extends AntlrScanner  {
   	
 	/**
 	 * Map Antlr token types to eclipse text attribute tokens
+	 * Keep the hilite map in sync with SyntaxColoringPreferencePage.java
 	 */
 	static {
 	   hilite = new HashMap<Integer, IToken>();
