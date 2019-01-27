@@ -188,6 +188,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 
 		//http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/SettingthefontstyleforegroundandbackgroundcolorsofStyledText.htm
 		StyledText text = new StyledText(editorComposite,SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		text.setLayoutData(gd);
 		text.setText("TEST PROGRAM"+Text.DELIMITER
 				+ "This could be many lines of code"+Text.DELIMITER
 				+ ""+Text.DELIMITER
