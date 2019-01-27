@@ -8,6 +8,8 @@ import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -26,6 +28,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
+import org.github.antlr4ide.editor.ANTLRv4Scanner;
 
 
 public class SyntaxColoringPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
@@ -95,7 +98,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	
 	@Override
 	protected void performDefaults() {
-		// TODO Auto-generated method stub
+		setDefaults();
 		super.performDefaults();
 	}
 	
@@ -174,7 +177,9 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		styleUnderlineEnabled.setPropertyChangeListener(styleChangeListener);
 		styleStrikethruEnabled.setPropertyChangeListener(styleChangeListener);
 
-		
+		/*
+		 * PREVIEW
+		 */
 		gd = new GridData(GridData.FILL_BOTH);
 		gd.widthHint = convertWidthInCharsToPixels(20);
 		gd.heightHint = convertHeightInCharsToPixels(5);
@@ -274,6 +279,17 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 			// store map of styles for each elements
 			ItemStyle style = hiliteItemStyle.get(element);
 			setItemStyleProperty(ix,style);
+		}
+	}
+	
+	private void setDefaults() {
+		// contains attribute map<Integer, IToken> and IToken.getData contains the TextAttribute.
+		ANTLRv4Scanner scanner=new ANTLRv4Scanner(false);
+		Map<Integer, IToken> scannerHilite=ANTLRv4Scanner.getHilite();
+		// TextAttribute t=(TextAttribute) scannerHilite.get(0).getData();
+		for(Integer ix: scannerHilite.keySet()) {
+			ItemStyle is=new ItemStyle((TextAttribute) scannerHilite.get(ix).getData());
+			hiliteItemStyle.put(hiliteElements.get(ix),is);
 		}
 	}
 
