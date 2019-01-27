@@ -23,29 +23,29 @@ public class ANTLRv4Scanner extends AntlrScanner  {
 	 * Keep the hilite map in sync with SyntaxColoringPreferencePage.java
 	 */
 	static {
-	   hilite = new HashMap<Integer, IToken>();
+	   setHilite(new HashMap<Integer, IToken>());
 	   // Statements
-	   hilite.put(ANTLRv4Lexer.FRAGMENT, stmtTextToken);
-	   hilite.put(ANTLRv4Lexer.CHANNELS, stmtTextToken);
-	   hilite.put(ANTLRv4Lexer.PARSER,   stmtTextToken);
-	   hilite.put(ANTLRv4Lexer.LEXER,    stmtTextToken);
-	   hilite.put(ANTLRv4Lexer.OPTIONS,  stmtTextToken);
-	   hilite.put(ANTLRv4Lexer.TOKENS,   stmtTextToken);
-	   hilite.put(ANTLRv4Lexer.GRAMMAR,  stmtTextToken);
-	   hilite.put(ANTLRv4Lexer.IMPORT,   stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.FRAGMENT, stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.CHANNELS, stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.PARSER,   stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.LEXER,    stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.OPTIONS,  stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.TOKENS,   stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.GRAMMAR,  stmtTextToken);
+	   getHilite().put(ANTLRv4Lexer.IMPORT,   stmtTextToken);
 
 	   // Constants
-	   hilite.put(ANTLRv4Lexer.INT,            constTextToken);
-	   hilite.put(ANTLRv4Lexer.STRING_LITERAL, constTextToken);
+	   getHilite().put(ANTLRv4Lexer.INT,            constTextToken);
+	   getHilite().put(ANTLRv4Lexer.STRING_LITERAL, constTextToken);
 	   
 	   // Comments
-	   hilite.put(ANTLRv4Lexer.DOC_COMMENT,   commentTextToken);
-	   hilite.put(ANTLRv4Lexer.BLOCK_COMMENT, commentTextToken);
-	   hilite.put(ANTLRv4Lexer.LINE_COMMENT,  commentTextToken);
+	   getHilite().put(ANTLRv4Lexer.DOC_COMMENT,   commentTextToken);
+	   getHilite().put(ANTLRv4Lexer.BLOCK_COMMENT, commentTextToken);
+	   getHilite().put(ANTLRv4Lexer.LINE_COMMENT,  commentTextToken);
 	   
 	   // References
-	   hilite.put(ANTLRv4Lexer.TOKEN_REF, lexerRuleTextToken);
-	   hilite.put(ANTLRv4Lexer.RULE_REF,  parserRuleTextToken);
+	   getHilite().put(ANTLRv4Lexer.TOKEN_REF, lexerRuleTextToken);
+	   getHilite().put(ANTLRv4Lexer.RULE_REF,  parserRuleTextToken);
 
 	}
 	

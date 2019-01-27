@@ -14,7 +14,7 @@ public class AntlrScanner implements ITokenScanner  {
 	protected boolean DEBUG;
 
 	protected AntlrDocument document;
-	protected static Map<Integer, IToken> hilite ;  // Users should override this. See ANTLRv4Scanner.java
+	private static Map<Integer, IToken> hilite ;  // Users should override this. See ANTLRv4Scanner.java
 	
 	private IToken fDefaultReturnToken;
 	
@@ -184,6 +184,20 @@ public class AntlrScanner implements ITokenScanner  {
 		int length=1+antlrTokens.get(tokenIndex).getStopIndex()
 				    -antlrTokens.get(tokenIndex).getStartIndex();
 		return length;
+	}
+
+	/**
+	 * @return the hilite
+	 */
+	public static Map<Integer, IToken> getHilite() {
+		return hilite;
+	}
+
+	/**
+	 * @param hilite the hilite to set
+	 */
+	public static void setHilite(Map<Integer, IToken> hilite) {
+		AntlrScanner.hilite = hilite;
 	}
 	
 }
