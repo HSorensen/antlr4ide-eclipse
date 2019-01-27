@@ -6,8 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.antlr.parser.antlr4.ANTLRv4Lexer;
 import org.eclipse.jface.preference.ColorFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -27,6 +30,21 @@ import org.eclipse.ui.PlatformUI;
 
 
 public class SyntaxColoringPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+	private static final String ANTLRIDE_PREFERENCE_SYNTAX = "antlride.preference.syntax.";
+	private Map<String,ItemStyle>hiliteItemStyle;
+	private ItemStyle selectedItemStyle;
+	
+	/*   Style Editors   */
+	Composite stylesComposite;
+	private CheckBoxEditor styleEnabled;
+	private ColorFieldEditor colorForegroundField;
+	private ColorFieldEditor colorBackgroundField;
+	private CheckBoxEditor styleBoldEnabled;
+	private CheckBoxEditor styleItalicEnabled;
+	private CheckBoxEditor styleUnderlineEnabled;
+	private CheckBoxEditor styleStrikethruEnabled;
+	/* ------------------ */
+
 	private static Map<Integer,String> hiliteElements ;  // default from ANTLRv4Scanner.java
 	static {
 		   hiliteElements = new LinkedHashMap<Integer, String>();
@@ -113,7 +131,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		/*
 		 * Style editor
 		 */
-		Composite stylesComposite = new Composite(editorComposite, SWT.NONE);
+		stylesComposite = new Composite(editorComposite, SWT.NONE);
 		layout = new GridLayout();
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
@@ -121,18 +139,26 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		stylesComposite.setLayout(layout);
 		stylesComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		CheckBoxEditor styleEnabled = new CheckBoxEditor("enabled","Enable",stylesComposite) ;
+		styleEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabled","Enable",stylesComposite) ;
 		
-		ColorFieldEditor colorForegroundField = new ColorFieldEditor("enabledFgRgb","Foreground",stylesComposite) ;
-		ColorFieldEditor colorBackgroundField = new ColorFieldEditor("enabledBgRgb","Background",stylesComposite) ;
-		RGB rgbBG=colorBackgroundField.getColorSelector().getColorValue();
-		colorBackgroundField.getColorSelector().setColorValue(rgbBG);
+		colorForegroundField = new ColorFieldEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledFgRgb","Foreground",stylesComposite) ;
+		colorBackgroundField = new ColorFieldEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBgRgb","Background",stylesComposite) ;
 
-		CheckBoxEditor styleBoldEnabled = new CheckBoxEditor("enabledBold","Bold",stylesComposite) ;
-		CheckBoxEditor styleItalicEnabled = new CheckBoxEditor("enabledItalic","Italic",stylesComposite) ;
-		CheckBoxEditor styleUnderlineEnabled = new CheckBoxEditor("enabledUnderline","Underline",stylesComposite) ;
-		CheckBoxEditor styleStrikethruEnabled = new CheckBoxEditor("enabledStrikethru","Strikethrough",stylesComposite) ;
+		styleBoldEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBold","Bold",stylesComposite) ;
+		styleItalicEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledItalic","Italic",stylesComposite) ;
+		styleUnderlineEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledUnderline","Underline",stylesComposite) ;
+		styleStrikethruEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledStrikethru","Strikethrough",stylesComposite) ;
 
+		MyStylePropertyChangeListener styleChangeListener=new MyStylePropertyChangeListener();
+		styleEnabled.setPropertyChangeListener(styleChangeListener);
+		colorForegroundField.setPropertyChangeListener(styleChangeListener);
+		colorBackgroundField.setPropertyChangeListener(styleChangeListener);
+		styleBoldEnabled.setPropertyChangeListener(styleChangeListener);
+		styleItalicEnabled.setPropertyChangeListener(styleChangeListener);
+		styleUnderlineEnabled.setPropertyChangeListener(styleChangeListener);
+		styleStrikethruEnabled.setPropertyChangeListener(styleChangeListener);
+
+		
 		gd = new GridData(GridData.FILL_BOTH);
 		gd.widthHint = convertWidthInCharsToPixels(20);
 		gd.heightHint = convertHeightInCharsToPixels(5);
@@ -183,7 +209,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// invoked when double clicking on an item
-			// TODO: set selected color and close widget
 			System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetDefaultSelected "+e );
 		}
 
@@ -191,10 +216,13 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		public void widgetSelected(SelectionEvent e) {
 			List list=(List) e.getSource();
 			String selected[]=list.getSelection();
-			for(String item:selected)
+			for(String item:selected) {
 			System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetSelected " 
-		    + " selection "+item
-		);
+		    + " selection "+item);
+		    
+		    selectedItemStyle=hiliteItemStyle.get(item);
+		    updateColorStyle(selectedItemStyle);
+		}
 		}
 		
 	}
@@ -252,8 +280,10 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		public void setEnabled(Boolean enabled) {this.enabled = enabled;}
 		public RGB getFg() {return fg;}
 		public void setFg(RGB fg) {	this.fg = fg;}
+		public void setFg(String strRGB) { this.fg = RGBfromString(strRGB,DEFAULT_FG_RGB);}
 		public RGB getBg() {return bg;}
 		public void setBg(RGB bg) {	this.bg = bg;}
+		public void setBg(String strRGB) {	this.bg = RGBfromString(strRGB,DEFAULT_BG_RGB);}
 		public Boolean isBold() {return bold;}
 		public void setBold(Boolean bold) {	this.bold = bold;}
 		public Boolean isItalic() {	return italic;}
@@ -262,38 +292,47 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		public void setUnderlined(Boolean underlined) {	this.underlined = underlined;}
 		public Boolean isStrikethru() {	return strikethru;}
 		public void setStrikethru(Boolean strikethru) {	this.strikethru = strikethru;}
-		
-		public java.util.List<String> toPropertyString() {
-			java.util.List<String> out=new ArrayList<String>();
-			
-			out.add(".styleEnabled="+isEnabled());
-			out.add(".styleBold="+isBold());
-			out.add(".styleItalic="+isItalic());
-			out.add(".styleUnderlined="+isUnderlined());
-			out.add(".styleStrikethru="+isStrikethru());
-			out.add(".styleFgBlue="+getFg().blue);
-			out.add(".styleFgGreen="+getFg().green);
-			out.add(".styleFgRed="+getFg().red);
-			out.add(".styleBgBlue="+getBg().blue);
-			out.add(".styleBgGreen="+getBg().green);
-			out.add(".styleBgRed="+getBg().red);
 
-			return out;
+		private RGB RGBfromString(String strRGB, RGB defaultRgb) {
+			// strRBG: "RGB {255, 255, 255}"
+			try {
+			String s[]=strRGB.substring(5, strRGB.length()-1).split(",");
+			int r = Integer.parseInt(s[0].trim());
+			int g = Integer.parseInt(s[1].trim());
+			int b = Integer.parseInt(s[2].trim());
+			
+			return new RGB(r,b,g);
+			}
+			catch (Exception e) {
+			}
+			
+			return defaultRgb;
 		}
+
+		
 	}
 	
-	private void updateColorStyle(String itemName) {
+	private void updateColorStyle(ItemStyle style) {
+		styleEnabled.getCheckBox().setSelection(style.isEnabled());
 		
+		colorForegroundField.getColorSelector().setColorValue(style.getFg());
+		colorBackgroundField.getColorSelector().setColorValue(style.getBg());
+
+		styleBoldEnabled.getCheckBox().setSelection(style.isBold());
+		styleItalicEnabled.getCheckBox().setSelection(style.isItalic());
+		styleUnderlineEnabled.getCheckBox().setSelection(style.isUnderlined());
+		styleStrikethruEnabled.getCheckBox().setSelection(style.isStrikethru());
 	}
 	
 	private void initElementList(List elementList) {
 		System.out.println("SyntaxColoringPreferencePage - initElementList" );
-		Map<Integer,ItemStyle>hiliteItemStyle=new HashMap<>();
-		
+		hiliteItemStyle=new HashMap<>();
+
 		for(Integer ix: hiliteElements.keySet()) {
-			elementList.add(hiliteElements.get(ix));
+			String element=hiliteElements.get(ix);
+			elementList.add(element);
 			// set initial map of styles for each elements
-			hiliteItemStyle.put(ix,getItemStyleProperty(ix));
+			hiliteItemStyle.put(element,getItemStyleProperty(ix));
 		}
 	}
 
@@ -307,21 +346,9 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		is.setItalic(ps.getBoolean(pn(ix,"styleItalic")));
 		is.setUnderlined(ps.getBoolean(pn(ix,"styleUnderline")));
 		is.setStrikethru(ps.getBoolean(pn(ix,"styleStrikethru")));
-		if (ps.contains(pn(ix,"styleFgRed"))) {
-			is.setFg(new RGB(
-			 ps.getInt(pn(ix,"styleFgRed"))
-			,ps.getInt(pn(ix,"styleFgBlue"))
-			,ps.getInt(pn(ix,"styleFgGreen"))
-			));
-		}
-		if (ps.contains(pn(ix,"styleBgRed"))) {
-			is.setBg(new RGB(
-			 ps.getInt(pn(ix,"styleBgRed"))
-			,ps.getInt(pn(ix,"styleBgBlue"))
-			,ps.getInt(pn(ix,"styleBgGreen"))
-			));
-		}
-		
+		is.setFg(ps.getString(pn(ix,"styleFgRGB")));
+		is.setBg(ps.getString(pn(ix,"styleBgRGB")));
+
 		return is;
 	}
 
@@ -332,7 +359,28 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	 * @return
 	 */
 	private String pn(Integer ix, String styleAttribute) {
-		// TODO Auto-generated method stub
-		return "antlride.preference.syntax."+ix+"."+styleAttribute;
+		return ANTLRIDE_PREFERENCE_SYNTAX+ix+"."+styleAttribute;
 	}
+	
+	private class MyStylePropertyChangeListener implements IPropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			FieldEditor f=(FieldEditor) event.getSource();
+			String pref=f.getPreferenceName();
+			System.out.println("SyntaxColoringPreferencePage - MyStylePropertyChangeListener "
+					+ " preference " + pref
+					+ " new " + event.getNewValue()
+					+ " old "+ event.getOldValue()
+					);
+			
+			 if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabled")) selectedItemStyle.setEnabled((Boolean) event.getNewValue());
+		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBold")) selectedItemStyle.setBold((Boolean) event.getNewValue());
+		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledItalic")) selectedItemStyle.setItalic((Boolean) event.getNewValue());
+		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledUnderline")) selectedItemStyle.setUnderlined((Boolean) event.getNewValue());
+		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledStrikethru")) selectedItemStyle.setStrikethru((Boolean) event.getNewValue());
+		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledFgRgb")) selectedItemStyle.setFg((RGB) event.getNewValue());
+		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBgRgb")) selectedItemStyle.setBg((RGB) event.getNewValue());
+		}
+	}
+	
 }
