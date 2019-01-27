@@ -69,14 +69,14 @@ public class ItemStyle {
 	 * Set Foreground Color from a RGB string
 	 * @param strRGB "RGB {255, 255, 255}"
 	 */
-	public void setFg(String strRGB) { this.fg = RGBfromString(strRGB,DEFAULT_FG_RGB);}
+	public void setFg(String strRGB) { this.fg = parseRGBString(strRGB,DEFAULT_FG_RGB);}
 	public RGB getBg() {return bg;}
 	public void setBg(RGB bg) {	this.bg = bg;}
 	/**
 	 * Set Background Color from a RGB string
 	 * @param strRGB "RGB {255, 255, 255}"
 	 */
-	public void setBg(String strRGB) {	this.bg = RGBfromString(strRGB,DEFAULT_BG_RGB);}
+	public void setBg(String strRGB) {	this.bg = parseRGBString(strRGB,DEFAULT_BG_RGB);}
 	public Boolean isBold() {return bold;}
 	public void setBold(Boolean bold) {	this.bold = bold;}
 	public Boolean isItalic() {	return italic;}
@@ -101,7 +101,7 @@ public class ItemStyle {
 		return out;
 	}
 	
-	private RGB RGBfromString(String strRGB, RGB defaultRgb) {
+	private RGB parseRGBString(String strRGB, RGB defaultRgb) {
 		// strRBG: "RGB {255, 255, 255}"
 		try {
 		String s[]=strRGB.substring(5, strRGB.length()-1).split(",");
