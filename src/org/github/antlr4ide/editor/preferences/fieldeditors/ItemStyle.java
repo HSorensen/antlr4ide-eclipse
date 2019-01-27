@@ -1,5 +1,7 @@
 package org.github.antlr4ide.editor.preferences.fieldeditors;
 
+import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 
 /**
@@ -84,6 +86,21 @@ public class ItemStyle {
 	public Boolean isStrikethru() {	return strikethru;}
 	public void setStrikethru(Boolean strikethru) {	this.strikethru = strikethru;}
 
+	/**
+	 * Return the font style. 
+	 * Intended to be used for {@code StyleRange.fontStyle=itemStyle.asFontStyle(); }.
+	 * @return bit masked integer with the set attributes
+	 */
+	public int toFontStyle() {
+		int out=SWT.NORMAL;
+		if(isBold()) out|=SWT.BOLD;
+		if(isItalic()) out|=SWT.ITALIC;
+		if(isUnderlined()) out|=TextAttribute.UNDERLINE;
+		if(isStrikethru()) out|=TextAttribute.STRIKETHROUGH;
+
+		return out;
+	}
+	
 	private RGB RGBfromString(String strRGB, RGB defaultRgb) {
 		// strRBG: "RGB {255, 255, 255}"
 		try {
