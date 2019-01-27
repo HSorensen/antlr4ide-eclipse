@@ -94,6 +94,12 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	}
 	
 	@Override
+	protected void performDefaults() {
+		// TODO Auto-generated method stub
+		super.performDefaults();
+	}
+	
+	@Override
 	protected Control createContents(Composite parent) {
 		System.out.println("SyntaxColoringPreferencePage - createControl" );
 		initializeDialogUnits(parent);
@@ -236,92 +242,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		}
 		
 	}
-	
-	private class ItemStyle {
-		private final RGB DEFAULT_FG_RGB=new RGB(0,0,0); // black
-		private final RGB DEFAULT_BG_RGB=new RGB(255,255,255); // white
-		
-		private Boolean enabled;
-		private RGB fg;
-		private RGB bg;
-		private Boolean bold;
-		private Boolean italic;
-		private Boolean underlined;
-		private Boolean strikethru;
-		// font ?
-		
-		/**
-		 * Creates an ItemStyle with default values.
-		 */
-		public ItemStyle() {
-			setDefaultItemStyle();
-		}
-		
-		/**
-		 * Initialize from a style
-		 * @param style
-		 */
-		public ItemStyle(ItemStyle style) {
-			if(style==null) setDefaultItemStyle();
-			else {
-			setEnabled(style.isEnabled());
-			setBold(style.isBold());
-			setItalic(style.isItalic());
-			setUnderlined(style.isUnderlined());
-			setStrikethru(style.isStrikethru());
-			setFg(style.getFg());
-			setBg(style.getBg());
-			}
-		}
 
-		
-		private void setDefaultItemStyle() {
-			setEnabled(false);
-			setBold(false);
-			setItalic(false);
-			setUnderlined(false);
-			setStrikethru(false);
-			setFg(DEFAULT_FG_RGB);
-			setBg(DEFAULT_BG_RGB);
-		}
-				
-		
-		public Boolean isEnabled() {return enabled;}
-		public void setEnabled(Boolean enabled) {this.enabled = enabled;}
-		public RGB getFg() {return fg;}
-		public void setFg(RGB fg) {	this.fg = fg;}
-		public void setFg(String strRGB) { this.fg = RGBfromString(strRGB,DEFAULT_FG_RGB);}
-		public RGB getBg() {return bg;}
-		public void setBg(RGB bg) {	this.bg = bg;}
-		public void setBg(String strRGB) {	this.bg = RGBfromString(strRGB,DEFAULT_BG_RGB);}
-		public Boolean isBold() {return bold;}
-		public void setBold(Boolean bold) {	this.bold = bold;}
-		public Boolean isItalic() {	return italic;}
-		public void setItalic(Boolean italic) {	this.italic = italic;}
-		public Boolean isUnderlined() {	return underlined;}
-		public void setUnderlined(Boolean underlined) {	this.underlined = underlined;}
-		public Boolean isStrikethru() {	return strikethru;}
-		public void setStrikethru(Boolean strikethru) {	this.strikethru = strikethru;}
-
-		private RGB RGBfromString(String strRGB, RGB defaultRgb) {
-			// strRBG: "RGB {255, 255, 255}"
-			try {
-			String s[]=strRGB.substring(5, strRGB.length()-1).split(",");
-			int r = Integer.parseInt(s[0].trim());
-			int g = Integer.parseInt(s[1].trim());
-			int b = Integer.parseInt(s[2].trim());
-			
-			return new RGB(r,g,b);
-			}
-			catch (Exception e) {
-			}
-			
-			return defaultRgb;
-		}
-
-		
-	}
-	
 	private void updateColorStyle(ItemStyle style) {
 		styleEnabled.getCheckBox().setSelection(style.isEnabled());
 		
@@ -382,14 +303,23 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		return is;
 	}
 
-	/** 
-	 * return property name for a style attribute
-	 * 
-	 * @param string
-	 * @return
+	/**
+	 * Return preference name for a style attribute
+	 * @param ix: Unique index to hilite element map
+	 * @param suffix suffix for style preference name
+	 * @return ANTLRIDE_PREFERENCE_SYNTAX+ix+"."+suffix
 	 */
-	private String pn(Integer ix, String styleAttribute) {
-		return ANTLRIDE_PREFERENCE_SYNTAX+ix+"."+styleAttribute;
+	private String pn(Integer ix, String suffix) {
+		return ANTLRIDE_PREFERENCE_SYNTAX+ix+"."+suffix;
+	}
+
+	/**
+	 * Return preference name for a style attribute
+	 * @param suffix suffix for style preference name
+	 * @return ANTLRIDE_PREFERENCE_SYNTAX+"."+suffix
+	 */
+	private String pn(String suffix) {
+		return ANTLRIDE_PREFERENCE_SYNTAX+"."+suffix;
 	}
 	
 	private class MyStylePropertyChangeListener implements IPropertyChangeListener {
@@ -403,13 +333,13 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 					+ " old " + event.getOldValue()
 					);
 			
-			 if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabled")) selectedItemStyle.setEnabled((Boolean) event.getNewValue());
-		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBold")) selectedItemStyle.setBold((Boolean) event.getNewValue());
-		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledItalic")) selectedItemStyle.setItalic((Boolean) event.getNewValue());
-		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledUnderline")) selectedItemStyle.setUnderlined((Boolean) event.getNewValue());
-		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledStrikethru")) selectedItemStyle.setStrikethru((Boolean) event.getNewValue());
-		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledFgRgb")) selectedItemStyle.setFg((RGB) event.getNewValue());
-		else if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBgRgb")) selectedItemStyle.setBg((RGB) event.getNewValue());
+			 if(pref.equals(pn("enabled"))) selectedItemStyle.setEnabled((Boolean) event.getNewValue());
+		else if(pref.equals(pn("enabledBold"))) selectedItemStyle.setBold((Boolean) event.getNewValue());
+		else if(pref.equals(pn("enabledItalic"))) selectedItemStyle.setItalic((Boolean) event.getNewValue());
+		else if(pref.equals(pn("enabledUnderline"))) selectedItemStyle.setUnderlined((Boolean) event.getNewValue());
+		else if(pref.equals(pn("enabledStrikethru"))) selectedItemStyle.setStrikethru((Boolean) event.getNewValue());
+		else if(pref.equals(pn("enabledFgRgb"))) selectedItemStyle.setFg((RGB) event.getNewValue());
+		else if(pref.equals(pn("enabledBgRgb"))) selectedItemStyle.setBg((RGB) event.getNewValue());
 		}
 	}
 	
