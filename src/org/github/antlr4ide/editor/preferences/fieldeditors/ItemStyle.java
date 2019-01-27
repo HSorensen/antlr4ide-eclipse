@@ -27,7 +27,7 @@ public class ItemStyle {
 	 * Creates an ItemStyle with default values.
 	 */
 	public ItemStyle() {
-		this(null);
+		setDefaultItemStyle();
 	}
 	
 	/**
@@ -45,6 +45,25 @@ public class ItemStyle {
 		setFg(style.getFg());
 		setBg(style.getBg());
 		}
+	}
+
+	public ItemStyle(TextAttribute testAttribute) {
+		this();
+		if(testAttribute==null) return;
+		
+		if(testAttribute.getForeground()!=null)
+		  setFg(testAttribute.getForeground().getRGB());
+		
+		if(testAttribute.getBackground()!=null)
+		  setBg(testAttribute.getBackground().getRGB());
+		
+		int textStyle=testAttribute.getStyle();
+		
+		setEnabled(true);
+		if((textStyle&SWT.BOLD)!=0)  setBold(true);
+		if((textStyle&SWT.ITALIC)!=0) setItalic(true);
+		if((textStyle&TextAttribute.UNDERLINE)!=0) setUnderlined(true);
+		if((textStyle&TextAttribute.STRIKETHROUGH)!=0) setStrikethru(true);
 	}
 
 	/**
