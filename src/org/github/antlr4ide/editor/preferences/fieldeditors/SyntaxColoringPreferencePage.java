@@ -1,6 +1,5 @@
 package org.github.antlr4ide.editor.preferences.fieldeditors;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -73,7 +72,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 
 		}
 	
-//	private FontMetrics fFontMetrics;
 	@Override
 	public void init(IWorkbench workbench) {
 		System.out.println("SyntaxColoringPreferencePage - init" );
@@ -82,7 +80,19 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		setDescription("ANTLR Syntax Coloring");		
 		
 	}
+	
+	public boolean performOk() {
+		storePreferences();
+		return super.performOk();
+	}
 
+	
+	@Override
+	protected void performApply() {
+		storePreferences();
+		super.performApply();
+	}
+	
 	@Override
 	protected Control createContents(Composite parent) {
 		System.out.println("SyntaxColoringPreferencePage - createControl" );
@@ -301,7 +311,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 			int g = Integer.parseInt(s[1].trim());
 			int b = Integer.parseInt(s[2].trim());
 			
-			return new RGB(r,b,g);
+			return new RGB(r,g,b);
 			}
 			catch (Exception e) {
 			}
@@ -335,9 +345,29 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 			hiliteItemStyle.put(element,getItemStyleProperty(ix));
 		}
 	}
+	
+	private void storePreferences() {
+		for(Integer ix: hiliteElements.keySet()) {
+			String element=hiliteElements.get(ix);
+			// store map of styles for each elements
+			ItemStyle style = hiliteItemStyle.get(element);
+			setItemStyleProperty(ix,style);
+		}
+	}
+
+	private void setItemStyleProperty(Integer ix, ItemStyle style) {
+		IPreferenceStore ps = getPreferenceStore();
+		ps.setValue(pn(ix,"styleEnabled"),style.isEnabled());
+		ps.setValue(pn(ix,"styleBold"),style.isBold());
+		
+		ps.setValue(pn(ix,"styleItalic"),style.isItalic());
+		ps.setValue(pn(ix,"styleUnderline"),style.isUnderlined());
+		ps.setValue(pn(ix,"styleStrikethru"),style.isStrikethru());
+		ps.setValue(pn(ix,"styleFgRGB"),style.getFg().toString());
+		ps.setValue(pn(ix,"styleBgRGB"),style.getBg().toString());
+	}
 
 	private ItemStyle getItemStyleProperty(Integer ix) {
-		// TODO Auto-generated method stub
 		IPreferenceStore ps = getPreferenceStore();
 		ItemStyle is=new ItemStyle(); // default Item Style
 		
@@ -368,9 +398,9 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 			FieldEditor f=(FieldEditor) event.getSource();
 			String pref=f.getPreferenceName();
 			System.out.println("SyntaxColoringPreferencePage - MyStylePropertyChangeListener "
-					+ " preference " + pref
+					+ " preference >" + pref +"<"
 					+ " new " + event.getNewValue()
-					+ " old "+ event.getOldValue()
+					+ " old " + event.getOldValue()
 					);
 			
 			 if(pref.equals(ANTLRIDE_PREFERENCE_SYNTAX+"enabled")) selectedItemStyle.setEnabled((Boolean) event.getNewValue());
