@@ -2,6 +2,12 @@ package org.github.antlr4ide.editor.preferences.fieldeditors;
 
 import org.eclipse.swt.graphics.RGB;
 
+/**
+ * The ItemStyle is designed to be used with the SyntaxColoringPreferencePage
+ * for the style of the individual syntax elements.
+ * 
+ * 
+ */
 public class ItemStyle {
 	private final RGB DEFAULT_FG_RGB=new RGB(0,0,0); // black
 	private final RGB DEFAULT_BG_RGB=new RGB(255,255,255); // white
@@ -57,9 +63,17 @@ public class ItemStyle {
 	public void setEnabled(Boolean enabled) {this.enabled = enabled;}
 	public RGB getFg() {return fg;}
 	public void setFg(RGB fg) {	this.fg = fg;}
+	/**
+	 * Set Foreground Color from a RGB string
+	 * @param strRGB "RGB {255, 255, 255}"
+	 */
 	public void setFg(String strRGB) { this.fg = RGBfromString(strRGB,DEFAULT_FG_RGB);}
 	public RGB getBg() {return bg;}
 	public void setBg(RGB bg) {	this.bg = bg;}
+	/**
+	 * Set Background Color from a RGB string
+	 * @param strRGB "RGB {255, 255, 255}"
+	 */
 	public void setBg(String strRGB) {	this.bg = RGBfromString(strRGB,DEFAULT_BG_RGB);}
 	public Boolean isBold() {return bold;}
 	public void setBold(Boolean bold) {	this.bold = bold;}
