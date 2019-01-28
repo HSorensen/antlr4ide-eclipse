@@ -7,7 +7,8 @@ import org.github.antlr4ide.editor.antlr.AntlrScanner;
 
 public class ANTLRv4Scanner extends AntlrScanner  {
 
-  	public ANTLRv4Scanner(boolean debug) { super(debug); }
+	public ANTLRv4Scanner() { super(); }
+    public ANTLRv4Scanner(boolean debug) { super(debug); }
 
 	private static IToken stmtTextToken    = new org.eclipse.jface.text.rules.Token(IANTLRv4ColorConstants.STMT);
   	private static IToken constTextToken   = new org.eclipse.jface.text.rules.Token(IANTLRv4ColorConstants.CONST);
