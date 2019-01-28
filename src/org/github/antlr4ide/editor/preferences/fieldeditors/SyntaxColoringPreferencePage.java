@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.antlr.parser.antlr4.ANTLRv4Lexer;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -15,16 +18,19 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -35,6 +41,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	private static final String ANTLRIDE_PREFERENCE_SYNTAX = "antlride.preference.syntax.";
 	private Map<String,ItemStyle>hiliteItemStyle;
 	private ItemStyle selectedItemStyle;
+	private String selectedItem;
 	
 	/*   Style Editors   */
 	Composite stylesComposite;
@@ -47,6 +54,10 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	private CheckBoxEditor styleStrikethruEnabled;
 	/* ------------------ */
 
+	/*  Preview Editor */
+	private StyledText previewText;
+	
+	
 	private static Map<Integer,String> hiliteElements ;  // default from ANTLRv4Scanner.java
 	static {
 		   hiliteElements = new LinkedHashMap<Integer, String>();
@@ -75,6 +86,14 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 
 		}
 	
+	private static String previewInitText = 
+			  "// COMMENT \n"
+			+ "parser grammar GrammarName;"
+			+ "this: IS A rule; "
+			+ "rule: RULE;"
+			;
+	
+	
 	@Override
 	public void init(IWorkbench workbench) {
 		System.out.println("SyntaxColoringPreferencePage - init" );
@@ -93,12 +112,14 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	@Override
 	protected void performApply() {
 		storePreferences();
+		updatePreviewTextHighlight();
 		super.performApply();
 	}
 	
 	@Override
 	protected void performDefaults() {
 		setDefaults();
+		updatePreviewTextHighlight();
 		super.performDefaults();
 	}
 	
@@ -106,7 +127,9 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	protected Control createContents(Composite parent) {
 		System.out.println("SyntaxColoringPreferencePage - createControl" );
 		initializeDialogUnits(parent);
-		return createSyntaxPage(parent);
+		Control out=createSyntaxPage(parent);
+		updatePreviewTextHighlight();
+		return out;
 	}
 	
 	// Lot of inspiration from the CDT project : https://git.eclipse.org/c/cdt/org.eclipse.cdt.git/tree/core/org.eclipse.cdt.ui/src/org/eclipse/cdt/internal/ui
@@ -192,46 +215,64 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		
 
 		//http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/SettingthefontstyleforegroundandbackgroundcolorsofStyledText.htm
-		StyledText text = new StyledText(editorComposite,SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		text.setLayoutData(gd);
-		text.setText("TEST PROGRAM"+Text.DELIMITER
-				+ "This could be many lines of code"+Text.DELIMITER
-				+ ""+Text.DELIMITER
-				+ "Even here;"+Text.DELIMITER);
-		text.append("TEST 2"+Text.DELIMITER);
+		previewText = new StyledText(editorComposite,SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		previewText.setLayoutData(gd);
+		previewText.setText(previewInitText);
+		PaintListener myPaintListener = new MyPaintListener();
+		previewText.addPaintListener(myPaintListener);
 
-		// public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles)
-		// int[] ranges: ranges[n]: start, ranges[n+1]: length, styles[n/2]: style
-	    StyleRange style1 = new StyleRange(); //StyleRange(int start, int length, Color foreground, Color background, int fontStyle)
-	    style1.start = 0;
-	    style1.length = 10;
-	    style1.fontStyle = SWT.BOLD;
-	    text.setStyleRange(style1);
-
-		
-//	    TextStyle style1 = new TextStyle(font1, yellow, blue);
-//	    TextStyle style2 = new TextStyle(font2, green, null);
-//	    TextStyle style3 = new TextStyle(font3, blue, gray);
-//
-//	    layout.setText("English 1234567890asdfasdfasdf");
-//	    layout.setStyle(style1, 0, 6);
-//	    layout.setStyle(style2, 8, 10);
-//	    layout.setStyle(style3, 13, 21);
-	    
 		return colorComposite;
 	}
 	
+	private class MyPaintListener implements PaintListener {
+
+		@Override
+		public void paintControl(PaintEvent e) {
+			System.out.println("SyntaxColoringPreferencePage.MyPaintListener - paintControl - "+e.getSource()); 
+		}
+		
+	}
+	
+	private void updatePreviewTextHighlight() {
+		System.out.println("SyntaxColoringPreferencePage.ElementListListner - updatePreviewTextHighlight "); 
+		CharStream stream=CharStreams.fromString(previewText.getText());
+		ANTLRv4Lexer lexer = new ANTLRv4Lexer(stream);
+		previewText.setStyleRange(null); // clear all styles
+		for(Token antlrToken: lexer.getAllTokens()) {
+	    	applyPreviewTextItemStyle(hiliteItemStyle.get(hiliteElements.get(antlrToken.getType()))
+	    			,antlrToken.getStartIndex()
+	    			,antlrToken.getStopIndex());
+	    }
+		
+//		previewText.layout(true,true);
+//		previewText.replayout(true,true);
+	}
 	
 	
-	/*
+	private void applyPreviewTextItemStyle(ItemStyle itemStyle,int start, int stop) {
+//		System.out.println("SyntaxColoringPreferencePage.ElementListListner - applyPreviewTextItemStyle "+itemStyle+" "+start + " " + stop); 
+		if(itemStyle==null) return;
+		// public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles)
+		// int[] ranges: ranges[n]: start, ranges[n+1]: length, styles[n/2]: style
+	    StyleRange style1 = new StyleRange(); //StyleRange(int start, int length, Color foreground, Color background, int fontStyle)
+	    style1.start = start;
+	    style1.length = stop-start+1;
+	    style1.fontStyle = itemStyle.toFontStyle();
+	    style1.foreground = new Color(Display.getCurrent(),itemStyle.getFg());
+	    style1.background = new Color(Display.getCurrent(),itemStyle.getBg());
+	    previewText.setStyleRange(style1);
+	}
+
+	/**
 	 * When an list item is selected shows associated style attributes
 	 */
 	private class ElementListListener implements SelectionListener {
 
+
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// invoked when double clicking on an item
-			System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetDefaultSelected "+e );
+			//System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetDefaultSelected "+e );
 		}
 
 		@Override
@@ -243,6 +284,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		    + " selection "+item);
 		    
 		    selectedItemStyle=hiliteItemStyle.get(item);
+		    selectedItem     =item;
 		    updateColorStyle(selectedItemStyle);
 		}
 		}
@@ -286,7 +328,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		// contains attribute map<Integer, IToken> and IToken.getData contains the TextAttribute.
 		ANTLRv4Scanner scanner=new ANTLRv4Scanner(false);
 		Map<Integer, IToken> scannerHilite=ANTLRv4Scanner.getHilite();
-		// TextAttribute t=(TextAttribute) scannerHilite.get(0).getData();
 		for(Integer ix: scannerHilite.keySet()) {
 			ItemStyle is=new ItemStyle((TextAttribute) scannerHilite.get(ix).getData());
 			hiliteItemStyle.put(hiliteElements.get(ix),is);
@@ -357,6 +398,9 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		else if(pref.equals(pn("enabledStrikethru"))) selectedItemStyle.setStrikethru((Boolean) event.getNewValue());
 		else if(pref.equals(pn("enabledFgRgb"))) selectedItemStyle.setFg((RGB) event.getNewValue());
 		else if(pref.equals(pn("enabledBgRgb"))) selectedItemStyle.setBg((RGB) event.getNewValue());
+			 
+        hiliteItemStyle.put(selectedItem, selectedItemStyle);			 
+//		updatePreviewTextHighlight();
 		}
 	}
 	
