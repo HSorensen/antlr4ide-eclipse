@@ -218,19 +218,8 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		previewText = new StyledText(editorComposite,SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		previewText.setLayoutData(gd);
 		previewText.setText(previewInitText);
-		PaintListener myPaintListener = new MyPaintListener();
-		previewText.addPaintListener(myPaintListener);
 
 		return colorComposite;
-	}
-	
-	private class MyPaintListener implements PaintListener {
-
-		@Override
-		public void paintControl(PaintEvent e) {
-			System.out.println("SyntaxColoringPreferencePage.MyPaintListener - paintControl - "+e.getSource()); 
-		}
-		
 	}
 	
 	private void updatePreviewTextHighlight() {
@@ -383,8 +372,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	private class MyStylePropertyChangeListener implements IPropertyChangeListener {
 		@Override
 		public void propertyChange(PropertyChangeEvent event) {
-			FieldEditor f=(FieldEditor) event.getSource();
-			String pref=f.getPreferenceName();
+			String pref=((FieldEditor) event.getSource()).getPreferenceName();
 			System.out.println("SyntaxColoringPreferencePage - MyStylePropertyChangeListener "
 					+ " preference >" + pref +"<"
 					+ " new " + event.getNewValue()
@@ -399,8 +387,14 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		else if(pref.equals(pn("enabledFgRgb"))) selectedItemStyle.setFg((RGB) event.getNewValue());
 		else if(pref.equals(pn("enabledBgRgb"))) selectedItemStyle.setBg((RGB) event.getNewValue());
 			 
-        hiliteItemStyle.put(selectedItem, selectedItemStyle);			 
-//		updatePreviewTextHighlight();
+        // tip from https://stackoverflow.com/questions/4368533/updating-swt-objects-from-another-thread
+        // Update preview field with the changed attributes
+		Display.getDefault().asyncExec(new Runnable() {
+		    public void run() {
+		        updatePreviewTextHighlight();
+		    }
+		});
+
 		}
 	}
 	
