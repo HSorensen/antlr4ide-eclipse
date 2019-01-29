@@ -181,15 +181,15 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		stylesComposite.setLayout(layout);
 		stylesComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		styleEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabled","Enable",stylesComposite) ;
+		styleEnabled = new CheckBoxEditor(pn("enabled"),"Enable",stylesComposite) ;
 		
-		colorForegroundField = new ColorFieldEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledFgRgb","Foreground",stylesComposite) ;
-		colorBackgroundField = new ColorFieldEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBgRgb","Background",stylesComposite) ;
+		colorForegroundField = new ColorFieldEditor(pn("enabledFgRgb"),"Foreground",stylesComposite) ;
+		colorBackgroundField = new ColorFieldEditor(pn("enabledBgRgb"),"Background",stylesComposite) ;
 
-		styleBoldEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledBold","Bold",stylesComposite) ;
-		styleItalicEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledItalic","Italic",stylesComposite) ;
-		styleUnderlineEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledUnderline","Underline",stylesComposite) ;
-		styleStrikethruEnabled = new CheckBoxEditor(ANTLRIDE_PREFERENCE_SYNTAX+"enabledStrikethru","Strikethrough",stylesComposite) ;
+		styleBoldEnabled = new CheckBoxEditor(pn("enabledBold"),"Bold",stylesComposite) ;
+		styleItalicEnabled = new CheckBoxEditor(pn("enabledItalic"),"Italic",stylesComposite) ;
+		styleUnderlineEnabled = new CheckBoxEditor(pn("enabledUnderline"),"Underline",stylesComposite) ;
+		styleStrikethruEnabled = new CheckBoxEditor(pn("enabledStrikethru"),"Strikethrough",stylesComposite) ;
 
 		MyStylePropertyChangeListener styleChangeListener=new MyStylePropertyChangeListener();
 		styleEnabled.setPropertyChangeListener(styleChangeListener);
