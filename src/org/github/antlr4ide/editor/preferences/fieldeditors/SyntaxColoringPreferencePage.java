@@ -18,8 +18,6 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -41,7 +39,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	private static final String ANTLRIDE_PREFERENCE_SYNTAX = "antlride.preference.syntax.";
 	private Map<String,ItemStyle>hiliteItemStyle;
 	private ItemStyle selectedItemStyle;
-	private String selectedItem;
 	
 	/*   Style Editors   */
 	Composite stylesComposite;
@@ -273,7 +270,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		    + " selection "+item);
 		    
 		    selectedItemStyle=hiliteItemStyle.get(item);
-		    selectedItem     =item;
 		    updateColorStyle(selectedItemStyle);
 		}
 		}
