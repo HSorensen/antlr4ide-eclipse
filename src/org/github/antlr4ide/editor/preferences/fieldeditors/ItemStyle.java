@@ -33,23 +33,6 @@ public class ItemStyle {
 		setDefaultItemStyle();
 	}
 	
-	/**
-	 * Initialize from a style
-	 * @param style
-	 */
-	public ItemStyle(ItemStyle style) {
-		if(style==null) setDefaultItemStyle();
-		else {
-		setEnabled(style.isEnabled());
-		setBold(style.isBold());
-		setItalic(style.isItalic());
-		setUnderlined(style.isUnderlined());
-		setStrikethru(style.isStrikethru());
-		setFg(style.getFg());
-		setBg(style.getBg());
-		}
-	}
-
 	public ItemStyle(TextAttribute testAttribute) {
 		this();
 		if(testAttribute==null) return;
