@@ -84,10 +84,10 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		}
 	
 	private static String previewInitText = 
-			  "// COMMENT \n"
-			+ "parser grammar GrammarName;"
-			+ "this: IS A rule; "
-			+ "rule: RULE;"
+			  "// COMMENT                  \n"
+			+ "parser grammar GrammarName; \n"
+			+ "this: IS A rule;            \n"
+			+ "rule: RULE;                 \n"
 			;
 	
 	
@@ -162,7 +162,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		 * List of elements 
 		 */
 		org.eclipse.swt.widgets.List elementList=new org.eclipse.swt.widgets.List(editorComposite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		SelectionListener elementListListener= new ElementListListener();
+		SelectionListener elementListListener= new ElementSelectionListener();
 		elementList.addSelectionListener(elementListListener);
 		initElementList(elementList);
 		//elementList.
@@ -188,7 +188,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		styleUnderlineEnabled = new CheckBoxEditor(pn("enabledUnderline"),"Underline",stylesComposite) ;
 		styleStrikethruEnabled = new CheckBoxEditor(pn("enabledStrikethru"),"Strikethrough",stylesComposite) ;
 
-		MyStylePropertyChangeListener styleChangeListener=new MyStylePropertyChangeListener();
+		StylePropertyChangeListener styleChangeListener=new StylePropertyChangeListener();
 		styleEnabled.setPropertyChangeListener(styleChangeListener);
 		colorForegroundField.setPropertyChangeListener(styleChangeListener);
 		colorBackgroundField.setPropertyChangeListener(styleChangeListener);
@@ -250,9 +250,9 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	}
 
 	/**
-	 * When an list item is selected shows associated style attributes
+	 * When an list item is selected shows associated style attributes, sets the <code>selectedItemStyle</code> and refreshes the style editor
 	 */
-	private class ElementListListener implements SelectionListener {
+	private class ElementSelectionListener implements SelectionListener {
 
 
 		@Override
@@ -266,8 +266,8 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 			List list=(List) e.getSource();
 			String selected[]=list.getSelection();
 			for(String item:selected) {
-			System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetSelected " 
-		    + " selection "+item);
+//			System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetSelected " 
+//		    + " selection "+item);
 		    
 		    selectedItemStyle=hiliteItemStyle.get(item);
 		    updateColorStyle(selectedItemStyle);
@@ -365,15 +365,22 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		return ANTLRIDE_PREFERENCE_SYNTAX+"."+suffix;
 	}
 	
-	private class MyStylePropertyChangeListener implements IPropertyChangeListener {
+	/**
+	 * 
+	 * The StylePropertyChangeListener will catch any changes to the style properties
+	 * and will update the <code>selectedItemStyle</code> variable accordingly.
+	 * After each update the listener will update the <code>previewText</code> item using <code>Display.getDefault().asyncExec</code>
+	 *
+	 */
+	private class StylePropertyChangeListener implements IPropertyChangeListener {
 		@Override
 		public void propertyChange(PropertyChangeEvent event) {
 			String pref=((FieldEditor) event.getSource()).getPreferenceName();
-			System.out.println("SyntaxColoringPreferencePage - MyStylePropertyChangeListener "
-					+ " preference >" + pref +"<"
-					+ " new " + event.getNewValue()
-					+ " old " + event.getOldValue()
-					);
+//			System.out.println("SyntaxColoringPreferencePage - StylePropertyChangeListener "
+//					+ " preference >" + pref +"<"
+//					+ " new " + event.getNewValue()
+//					+ " old " + event.getOldValue()
+//					);
 			
 			 if(pref.equals(pn("enabled"))) selectedItemStyle.setEnabled((Boolean) event.getNewValue());
 		else if(pref.equals(pn("enabledBold"))) selectedItemStyle.setBold((Boolean) event.getNewValue());
