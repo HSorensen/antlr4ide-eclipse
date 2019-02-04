@@ -278,7 +278,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 			String element=hiliteElements.get(ix);
 			elementList.add(element);
 			// set initial map of styles for each elements
-			hiliteItemStyle.put(element,getItemStyleProperty(ix));
+			hiliteItemStyle.put(element,retrieveItemStyleProperty(ix));
 		}
 	}
 	
@@ -287,7 +287,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 			String element=hiliteElements.get(ix);
 			// store map of styles for each elements
 			ItemStyle style = hiliteItemStyle.get(element);
-			setItemStyleProperty(ix,style);
+			storeItemStyleProperty(ix,style);
 		}
 	}
 	
@@ -302,11 +302,10 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		}
 	}
 
-	private void setItemStyleProperty(Integer ix, ItemStyle style) {
+	private void storeItemStyleProperty(Integer ix, ItemStyle style) {
 		IPreferenceStore ps = getPreferenceStore();
 		ps.setValue(pn(ix,"styleEnabled"),style.isEnabled());
 		ps.setValue(pn(ix,"styleBold"),style.isBold());
-		
 		ps.setValue(pn(ix,"styleItalic"),style.isItalic());
 		ps.setValue(pn(ix,"styleUnderline"),style.isUnderlined());
 		ps.setValue(pn(ix,"styleStrikethru"),style.isStrikethru());
@@ -314,13 +313,13 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		ps.setValue(pn(ix,"styleBgRGB"),style.getBg().toString());
 	}
 
-	private ItemStyle getItemStyleProperty(Integer ix) {
+	private ItemStyle retrieveItemStyleProperty(Integer ix) {
 		IPreferenceStore ps = getPreferenceStore();
 		ItemStyle is=new ItemStyle(); // default Item Style
 		
 		is.setEnabled(ps.getBoolean(pn(ix,"styleEnabled")));
-		is.setBold(ps.getBoolean(pn(ix,"styleBold")));
-		is.setItalic(ps.getBoolean(pn(ix,"styleItalic")));
+		is.setBold   (ps.getBoolean(pn(ix,"styleBold")));
+		is.setItalic (ps.getBoolean(pn(ix,"styleItalic")));
 		is.setUnderlined(ps.getBoolean(pn(ix,"styleUnderline")));
 		is.setStrikethru(ps.getBoolean(pn(ix,"styleStrikethru")));
 		is.setFg(ps.getString(pn(ix,"styleFgRGB")));
