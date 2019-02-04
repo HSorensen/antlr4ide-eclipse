@@ -202,16 +202,14 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		/*
 		 * PREVIEW
 		 */
-		gd = new GridData(GridData.FILL_BOTH);
-		gd.widthHint = convertWidthInCharsToPixels(20);
-		gd.heightHint = convertHeightInCharsToPixels(5);
-		gd.horizontalSpan = 2;
-		
-		
 		label = new Label(editorComposite, SWT.LEFT);
 		label.setText("Preview");
 		label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
+		gd = new GridData(GridData.FILL_BOTH);
+		gd.widthHint = convertWidthInCharsToPixels(20);
+		gd.heightHint = convertHeightInCharsToPixels(5);
+		gd.horizontalSpan = 2;
 
 		//http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/SettingthefontstyleforegroundandbackgroundcolorsofStyledText.htm
 		previewText = new StyledText(editorComposite,SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
