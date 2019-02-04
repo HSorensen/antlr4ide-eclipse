@@ -32,7 +32,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 import org.github.antlr4ide.editor.ANTLRv4Scanner;
 
-
 public class SyntaxColoringPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 	private static final String ANTLRIDE_PREFERENCE_SYNTAX = "antlride.preference.syntax.";
 	
@@ -54,7 +53,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 
 	/*  Preview Editor */
 	private StyledText previewText;
-	
 	
 	private static Map<Integer,String> hiliteElements ;  // default from <code>ANTLRv4Scanner.java</code>
 	static {
@@ -81,7 +79,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		   // References
 		   hiliteElements.put(ANTLRv4Lexer.TOKEN_REF, "Token");
 		   hiliteElements.put(ANTLRv4Lexer.RULE_REF,  "Rule");
-
 		}
 	
 	private static String previewInitText = 
@@ -98,7 +95,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 
 		setPreferenceStore(PlatformUI.getPreferenceStore());
 		setDescription("ANTLR Syntax Coloring");		
-		
 	}
 	
 	@Override
@@ -106,7 +102,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		storePreferences();
 		return super.performOk();
 	}
-
 	
 	@Override
 	protected void performApply() {
@@ -233,30 +228,24 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	
 
 	/**
-	 * When an list item is selected shows associated style attributes, sets the <code>selectedItemStyle</code> and refreshes the style editor
+	 * When an list item is selected shows associated style attributes, sets the
+	 * <code>selectedItemStyle</code> and refreshes the style editor
 	 */
 	private class ElementSelectionListener implements SelectionListener {
-
-
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// invoked when double clicking on an item
-			//System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetDefaultSelected "+e );
 		}
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			List list=(List) e.getSource();
-			String selected[]=list.getSelection();
-			for(String item:selected) {
-//			System.out.println("SyntaxColoringPreferencePage.ElementListListner - widgetSelected " 
-//		    + " selection "+item);
-		    
-		    selectedItemStyle=hiliteItemStyle.get(item);
-		    updateColorStyle(selectedItemStyle);
+			List list = (List) e.getSource();
+			String selected[] = list.getSelection();
+			for (String item : selected) {
+				selectedItemStyle = hiliteItemStyle.get(item);
+				updateColorStyle(selectedItemStyle);
+			}
 		}
-		}
-		
 	}
 
 	private void updateColorStyle(ItemStyle style) {
@@ -380,8 +369,6 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		        updatePreviewTextHighlight();
 		    }
 		});
-
 		}
 	}
-	
 }
