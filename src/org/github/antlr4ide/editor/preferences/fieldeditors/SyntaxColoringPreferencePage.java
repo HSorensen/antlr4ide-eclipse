@@ -16,11 +16,9 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,11 +35,14 @@ import org.github.antlr4ide.editor.ANTLRv4Scanner;
 
 public class SyntaxColoringPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 	private static final String ANTLRIDE_PREFERENCE_SYNTAX = "antlride.preference.syntax.";
+	
+	/**
+	 * Map syntax elements to a ItemStyle
+	 */
 	private Map<String,ItemStyle>hiliteItemStyle;
 	private ItemStyle selectedItemStyle;
 	
 	/*   Style Editors   */
-	Composite stylesComposite;
 	private CheckBoxEditor styleEnabled;
 	private ColorFieldEditor colorForegroundField;
 	private ColorFieldEditor colorBackgroundField;
@@ -55,7 +56,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	private StyledText previewText;
 	
 	
-	private static Map<Integer,String> hiliteElements ;  // default from ANTLRv4Scanner.java
+	private static Map<Integer,String> hiliteElements ;  // default from <code>ANTLRv4Scanner.java</code>
 	static {
 		   hiliteElements = new LinkedHashMap<Integer, String>();
 		   // Statements
@@ -100,6 +101,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		
 	}
 	
+	@Override
 	public boolean performOk() {
 		storePreferences();
 		return super.performOk();
@@ -170,7 +172,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		/*
 		 * Style editor
 		 */
-		stylesComposite = new Composite(editorComposite, SWT.NONE);
+		Composite stylesComposite = new Composite(editorComposite, SWT.NONE);
 		layout = new GridLayout();
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
@@ -220,34 +222,16 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	}
 	
 	private void updatePreviewTextHighlight() {
-		System.out.println("SyntaxColoringPreferencePage.ElementListListner - updatePreviewTextHighlight "); 
+//		System.out.println("SyntaxColoringPreferencePage.ElementListListner - updatePreviewTextHighlight "); 
 		CharStream stream=CharStreams.fromString(previewText.getText());
 		ANTLRv4Lexer lexer = new ANTLRv4Lexer(stream);
 		previewText.setStyleRange(null); // clear all styles
 		for(Token antlrToken: lexer.getAllTokens()) {
-	    	applyPreviewTextItemStyle(hiliteItemStyle.get(hiliteElements.get(antlrToken.getType()))
-	    			,antlrToken.getStartIndex()
-	    			,antlrToken.getStopIndex());
+			ItemStyle itemStyle=hiliteItemStyle.get(hiliteElements.get(antlrToken.getType()));
+		    previewText.setStyleRange(itemStyle.toStyleRange(antlrToken.getStartIndex(), antlrToken.getStopIndex()));
 	    }
-		
-//		previewText.layout(true,true);
-//		previewText.replayout(true,true);
 	}
 	
-	
-	private void applyPreviewTextItemStyle(ItemStyle itemStyle,int start, int stop) {
-//		System.out.println("SyntaxColoringPreferencePage.ElementListListner - applyPreviewTextItemStyle "+itemStyle+" "+start + " " + stop); 
-		if(itemStyle==null) return;
-		// public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles)
-		// int[] ranges: ranges[n]: start, ranges[n+1]: length, styles[n/2]: style
-	    StyleRange style1 = new StyleRange(); //StyleRange(int start, int length, Color foreground, Color background, int fontStyle)
-	    style1.start = start;
-	    style1.length = stop-start+1;
-	    style1.fontStyle = itemStyle.toFontStyle();
-	    style1.foreground = new Color(Display.getCurrent(),itemStyle.getFg());
-	    style1.background = new Color(Display.getCurrent(),itemStyle.getBg());
-	    previewText.setStyleRange(style1);
-	}
 
 	/**
 	 * When an list item is selected shows associated style attributes, sets the <code>selectedItemStyle</code> and refreshes the style editor

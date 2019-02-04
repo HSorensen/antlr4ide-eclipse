@@ -2,7 +2,10 @@ package org.github.antlr4ide.editor.preferences.fieldeditors;
 
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * The ItemStyle is designed to be used with the SyntaxColoringPreferencePage
@@ -118,6 +121,19 @@ public class ItemStyle {
 		if(isStrikethru()) out|=TextAttribute.STRIKETHROUGH;
 
 		return out;
+	}
+	
+	public StyleRange toStyleRange(int start, int stop) {
+//		System.out.println("SyntaxColoringPreferencePage.ElementListListner - applyPreviewTextItemStyle "+itemStyle+" "+start + " " + stop); 
+		// public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles)
+		// int[] ranges: ranges[n]: start, ranges[n+1]: length, styles[n/2]: style
+	    StyleRange styleRange = new StyleRange(); //StyleRange(int start, int length, Color foreground, Color background, int fontStyle)
+	    styleRange.start = start;
+	    styleRange.length = stop-start+1;
+	    styleRange.fontStyle = toFontStyle();
+	    styleRange.foreground = new Color(Display.getCurrent(),getFg());
+	    styleRange.background = new Color(Display.getCurrent(),getBg());
+	    return styleRange;
 	}
 	
 	private RGB parseRGBString(String strRGB, RGB defaultRgb) {
