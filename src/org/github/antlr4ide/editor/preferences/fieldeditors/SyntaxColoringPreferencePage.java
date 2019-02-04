@@ -293,7 +293,8 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 	
 	private void setDefaults() {
 		// contains attribute map<Integer, IToken> and IToken.getData contains the TextAttribute.
-		ANTLRv4Scanner scanner=new ANTLRv4Scanner(false);
+		@SuppressWarnings("unused")
+		ANTLRv4Scanner scanner=new ANTLRv4Scanner();  // create instance of scanner to get static hilite map
 		Map<Integer, IToken> scannerHilite=ANTLRv4Scanner.getHilite();
 		for(Integer ix: scannerHilite.keySet()) {
 			ItemStyle is=new ItemStyle((TextAttribute) scannerHilite.get(ix).getData());
