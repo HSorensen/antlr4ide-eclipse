@@ -226,6 +226,7 @@ public class SyntaxColoringPreferencePage extends PreferencePage implements IWor
 		previewText.setStyleRange(null); // clear all styles
 		for(Token antlrToken: lexer.getAllTokens()) {
 			ItemStyle itemStyle=hiliteItemStyle.get(hiliteElements.get(antlrToken.getType()));
+			if(itemStyle==null) continue; // skip tokens without itemStyle
 		    previewText.setStyleRange(itemStyle.toStyleRange(antlrToken.getStartIndex(), antlrToken.getStopIndex()));
 	    }
 	}
